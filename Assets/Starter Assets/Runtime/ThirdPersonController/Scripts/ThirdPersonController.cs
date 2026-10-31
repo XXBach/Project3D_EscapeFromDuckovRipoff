@@ -1,4 +1,7 @@
 ﻿using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.Events;
+
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -58,6 +61,8 @@ namespace StarterAssets
 
         [Tooltip("What layers the character uses as ground")]
         public LayerMask GroundLayers;
+        [Tooltip("OnAttack Event")]
+        public UnityEvent OnAttack;
 
         [Header("Cinemachine")]
         [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
@@ -159,6 +164,7 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
+            AimAndAttack();
         }
 
         private void LateUpdate()
@@ -192,6 +198,8 @@ namespace StarterAssets
 
         private void CameraRotation()
         {
+            //_cinemachineTargetPitch = 50f;
+            //_cinemachineTargetYaw = 0f;
             // if there is an input and camera position is not fixed
             if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
             {
@@ -209,6 +217,13 @@ namespace StarterAssets
             // Cinemachine will follow this target
             CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
                 _cinemachineTargetYaw, 0.0f);
+
+            //// Góc cố định kiểu Duckov
+            //_cinemachineTargetPitch = 50f;
+            //_cinemachineTargetYaw = 0f;
+
+            //CinemachineCameraTarget.transform.rotation =
+            //    Quaternion.Euler(_cinemachineTargetPitch, _cinemachineTargetYaw, 0f);
         }
 
         private void Move()
@@ -250,12 +265,13 @@ namespace StarterAssets
 
             // normalise input direction
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+            Vector3 inputRotation = new Vector3(_input.look.x, 0.0f, _input.look.y).normalized;
 
             // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
             // if there is a move input rotate player when the player is moving
-            if (_input.move != Vector2.zero)
+            if (_input.look != Vector2.zero)
             {
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                _targetRotation = Mathf.Atan2(inputRotation.x, inputRotation.z) * Mathf.Rad2Deg +
                                   _mainCamera.transform.eulerAngles.y;
                 float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
                     RotationSmoothTime);
@@ -268,7 +284,7 @@ namespace StarterAssets
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
             // move the player
-            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
+            _controller.Move(inputDirection * (_speed * Time.deltaTime) +
                              new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
             // update animator if using character
@@ -347,7 +363,19 @@ namespace StarterAssets
                 _verticalVelocity += Gravity * Time.deltaTime;
             }
         }
-
+        private void AimAndAttack()
+        {
+            if(_input.aim)
+            {
+                //Đổi màu anim
+                //Đi chậm lại
+                //Giảm Recoil đi
+            }
+            if (_input.attack)
+            {
+                OnAttack?.Invoke();
+            }
+        }
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {
             if (lfAngle < -360f) lfAngle += 360f;

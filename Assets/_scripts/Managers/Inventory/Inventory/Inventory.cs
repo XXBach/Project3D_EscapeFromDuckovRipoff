@@ -1,6 +1,6 @@
 using UnityEngine;
 
-abstract class Inventory : MonoBehaviour
+abstract class Inventory 
 {
     private int _width = 20;
     private int _height = 20;

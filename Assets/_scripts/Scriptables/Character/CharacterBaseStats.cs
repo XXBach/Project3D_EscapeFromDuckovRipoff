@@ -3,33 +3,33 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CharacterBaseStats", menuName = "Scriptable Objects/CharacterBaseStats")]
 public class CharacterBaseStats : ScriptableObject
 {
-    [SerializeField] private int _maxHealth;
-    [SerializeField] private int _baseSpeed;
-    [SerializeField] private int _baseWeight;
-    [SerializeField] private int _baseEyeSight;
-    [SerializeField] private int _hungryness;
-    [SerializeField] private int _thirstyness;
+    [SerializeField] private float _maxHealth;
+    [SerializeField] private float _baseSpeed;
+    [SerializeField] private float _maxWeight;
+    [SerializeField] private float _baseEyeSight;
+    [SerializeField] private float _baseHungryness;
+    [SerializeField] private float _baseThirstyness;
 
-    public int MaxHealth {
+    public float MaxHealth {
         get { return _maxHealth; }     
     }
-    public int BaseSpeed
+    public float BaseSpeed
     {
         get { return _baseSpeed; }
     }
-    public int Hungryness
+    public float Hungryness
     {
-        get { return Hungryness; }
+        get { return _baseHungryness; }
     }
-    public int Thirstyness
+    public float Thirstyness
     {
-        get { return _thirstyness; }
+        get { return _baseThirstyness; }
     }
-    public int BaseWeight
+    public float MaxWeight
     {
-        get { return _baseWeight; }
+        get { return _maxWeight; }
     }
-    public int BaseEyeSight
+    public float BaseEyeSight
     {
         get { return _baseEyeSight; }
     }
