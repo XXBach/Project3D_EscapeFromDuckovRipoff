@@ -61,8 +61,6 @@ namespace StarterAssets
 
         [Tooltip("What layers the character uses as ground")]
         public LayerMask GroundLayers;
-        [Tooltip("OnAttack Event")]
-        public UnityEvent OnAttack;
 
         [Header("Cinemachine")]
         [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
@@ -91,6 +89,7 @@ namespace StarterAssets
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
+        public PlayerState MCState = PlayerState.Idle;
 
         // timeout deltatime
         private float _jumpTimeoutDelta;
@@ -155,6 +154,7 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+            MCState = PlayerState.Idle;
         }
 
         private void Update()
@@ -235,7 +235,10 @@ namespace StarterAssets
 
             // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
             // if there is no input, set the target speed to 0
-            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+            if (_input.move == Vector2.zero)
+            {
+                targetSpeed = 0.0f;
+            }
 
             // a reference to the players current horizontal velocity
             float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
@@ -373,7 +376,7 @@ namespace StarterAssets
             }
             if (_input.attack)
             {
-                OnAttack?.Invoke();
+                Bus<Shoot>.Raise(new Shoot());
             }
         }
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)

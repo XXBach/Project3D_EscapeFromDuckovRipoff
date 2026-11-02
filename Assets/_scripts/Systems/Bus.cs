@@ -28,3 +28,28 @@ public struct GameOver : IEvent
 {
 
 }
+public struct Shoot : IEvent
+{
+}
+public struct Reload : IEvent
+{
+}
+public struct Aim : IEvent
+{
+}
+public struct BulletHitEnemy : IEvent
+{
+    public readonly EnemyDataManager _target;
+    public BulletHitEnemy(EnemyDataManager target)
+    {
+        _target = target;
+    }
+}
+public struct BulletHitPlayer : IEvent
+{
+    public readonly CharacterDataManager _target;
+    public BulletHitPlayer(CharacterDataManager target)
+    {
+        _target = target;
+    }
+}
