@@ -1,9 +1,26 @@
 using UnityEngine;
 [System.Serializable]
+public class CurrentStats
+{
+    public float CurrentDamage { get; set; }
+    public float CurrentOverRangeMultiplier { get; set; }
+    public float CurrentFireRate { get; set; }
+    public int CurrentMagazineCapacity { get; set; }
+    public float CurrentReloadTime { get; set; }
+    public float CurrentRange { get; set; }
+    public float CurrentCritDamageMultiplier { get; set; }
+    public float CurrentADSTime { get; set; }
+    public float CurrentExplosionDamageCoefficient { get; set; }
+    public float CurrentVerticalRecoil { get; set; }
+    public float CurrentHorizontalRecoil { get; set; }
+    public float CurrentDurability { get; set; }
+    public float CurrentChanceToBleed { get; set; }
+}
+[System.Serializable]
 public class RangedWeapon : Item, IRepairable
 {
     [SerializeField] protected FireArmsBaseStats _baseStats;
-    protected CurrentStats _effectiveStats;
+    protected CurrentStats _effectiveStats = new CurrentStats();
 
     public CurrentStats EffectiveStats
     {
@@ -42,19 +59,3 @@ public class RangedWeapon : Item, IRepairable
     }
 }
 
-public class CurrentStats
-{
-    public float CurrentDamage { get; set; }
-    public float CurrentOverRangeMultiplier { get; set; }
-    public float CurrentFireRate { get; set; }
-    public float CurrentMagazineCapacity { get; set; }
-    public float CurrentReloadTime { get; set; }
-    public float CurrentRange { get; set; }
-    public float CurrentCritDamageMultiplier { get; set; }
-    public float CurrentADSTime { get; set; }
-    public float CurrentExplosionDamageCoefficient { get; set; }
-    public float CurrentVerticalRecoil { get; set; }
-    public float CurrentHorizontalRecoil { get; set; }
-    public float CurrentDurability { get; set; }
-    public float CurrentChanceToBleed { get; set; }
-}

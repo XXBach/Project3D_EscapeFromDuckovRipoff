@@ -8,7 +8,7 @@ public class FireArmsBaseStats : ScriptableObject
     [SerializeField] private float _baseDamage;
     [SerializeField] private float _overRangeMultiplier;
     [SerializeField] private float _fireRate;
-    [SerializeField] private float _magazineCapacity;
+    [SerializeField] private int _magazineCapacity;
     [SerializeField] private float _reloadTime;
     [SerializeField] private float _bulletSpeed;
     [SerializeField] private float _range;
@@ -31,7 +31,7 @@ public class FireArmsBaseStats : ScriptableObject
     public float BaseDamage { get { return _baseDamage; } }
     public float OverRangeMultiplier { get { return _overRangeMultiplier; } }
     public float FireRate { get { return _fireRate; } }
-    public float MagazineCapacity { get { return _magazineCapacity; } }
+    public int MagazineCapacity { get { return _magazineCapacity; } }
     public float ReloadTime { get { return _reloadTime; } }
     public float BulletSpeed { get { return _bulletSpeed; } }
     public float Range { get { return _range; } }

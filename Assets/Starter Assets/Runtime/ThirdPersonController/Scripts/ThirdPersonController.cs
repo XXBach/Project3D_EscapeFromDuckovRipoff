@@ -373,10 +373,11 @@ namespace StarterAssets
                 //Đổi màu anim
                 //Đi chậm lại
                 //Giảm Recoil đi
+                Bus<Aim>.Raise(new Aim());
             }
             if (_input.attack)
             {
-                Bus<Shoot>.Raise(new Shoot());
+                Bus<ShootTriggered>.Raise(new ShootTriggered());
             }
         }
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)

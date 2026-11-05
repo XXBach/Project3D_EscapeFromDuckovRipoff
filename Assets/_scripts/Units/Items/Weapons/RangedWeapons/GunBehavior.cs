@@ -5,24 +5,29 @@ public class GunBehavior : MonoBehaviour, ILethality
     [Header("Prefabs")]
     [SerializeField] private Ammo _usingBullet;
     [SerializeField] private RangedWeapon _usingGun;
+    //[SerializeField] private Transform _muzzleFlashPrefab;
+
+    [Tooltip("Bullet Spawn Point")]
+    [SerializeField] private Transform _bulletSpawnPoint;
 
     [Header("AudioClips")]
     [SerializeField] private AudioClip _reloadSound;
     [SerializeField] private AudioClip _shootingSound;
 
-    private int _currentAmmo;
+    private int _currentAmmoAmount;
     private float _nearestShootingTime;
     private float _cooldownTime;
     private void Awake()
     {
         _usingBullet ??= gameObject.GetComponent<Ammo>();
         _usingGun ??= gameObject.GetComponent<RangedWeapon>();
+        _usingGun.WeaponBasicSetup();
         _cooldownTime = CalculateCooldownTime(_usingGun.EffectiveStats.CurrentFireRate);
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        _currentAmmoAmount = _usingGun.EffectiveStats.CurrentMagazineCapacity;
     }
 
     // Update is called once per frame
@@ -33,13 +38,13 @@ public class GunBehavior : MonoBehaviour, ILethality
     private void OnEnable()
     {
         Bus<Reload>.OnEvent += HandleReload;
-        Bus<Shoot>.OnEvent += HandleShoot;
+        Bus<ShootTriggered>.OnEvent += HandleShoot;
         Bus<Aim>.OnEvent += HandleAim;
     }
     private void OnDisable()
     {
         Bus<Reload>.OnEvent -= HandleReload;
-        Bus<Shoot>.OnEvent -= HandleShoot;
+        Bus<ShootTriggered>.OnEvent -= HandleShoot;
         Bus<Aim>.OnEvent -= HandleAim;
     }
     public void HandleReload(Reload reloadEvent)
@@ -50,13 +55,16 @@ public class GunBehavior : MonoBehaviour, ILethality
         // Sau đó reset lại số đạn trong băng đạn
         // Unfreeze khả năng bắn
     }
-    public void HandleShoot(Shoot shootEvent)
+    public void HandleShoot(ShootTriggered shootEvent)
     {
         if(Time.time < _nearestShootingTime)
         {
             return;
         }
         _nearestShootingTime = Time.time + _cooldownTime;
+        BulletManager.Instance.Spawn(_bulletSpawnPoint.position, _bulletSpawnPoint.forward, _usingBullet.BaseStats.Speed, _usingGun.EffectiveStats.CurrentRange, CalculateShootingDamage(), _usingBullet.BaseStats, _usingGun.OwnerDomain);
+        _currentAmmoAmount--;
+        Debug.Log("Gun fired. Ammo remaining: " + _currentAmmoAmount);
         // Cast ray từ vị trí bắn ra hướng bắn theo kỹ thuật raycast từng bước
         // Giữa mỗi viên sẽ có sự lệch vị trí sử dụng stat recoil của Gun
         // So sánh Domain của Gun với Domain của Target để xác định có trúng hay không
@@ -76,5 +84,9 @@ public class GunBehavior : MonoBehaviour, ILethality
     {
         _cooldownTime = 1f / (fireRate + modifier);
         return _cooldownTime;
+    }
+    public float CalculateShootingDamage(float modifier = 0)
+    {
+        return _usingGun.EffectiveStats.CurrentDamage * _usingBullet.BaseStats.DamageCoefficient + modifier;
     }
 }
