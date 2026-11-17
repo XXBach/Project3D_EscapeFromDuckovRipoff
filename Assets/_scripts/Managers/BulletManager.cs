@@ -26,9 +26,13 @@ public class BulletManager : MonoBehaviour
     private readonly List<AmmoVisualData> _currentBullets = new List<AmmoVisualData>();
     [Tooltip("Bullet Visual Pool")]
     private readonly Dictionary<Transform, ObjectPool<Transform>> _bulletVisualPool = new Dictionary<Transform, ObjectPool<Transform>>();
-    
+    [Tooltip("Bullet Hit Sound")]
+    [SerializeField] private AudioClip _bulletFlyingSound;
+    [SerializeField] private AudioClip _bulletHitSound;
+    [SerializeField] private AudioSource _bulletAudioSource;
     private void Awake()
     {
+        _bulletAudioSource ??= GetComponent<AudioSource>();
         if (Instance == null)
         {
             Instance = this;
@@ -93,7 +97,7 @@ public class BulletManager : MonoBehaviour
     {
         Transform prefab = ammo.AmmoVisualPrefab;
         Transform visual = GetBulletVisualPool(prefab).Get();          // lấy "đĩa" từ chồng
-
+        //_bulletAudioSource.PlayOneShot(_bulletFlyingSound);
         visual.SetPositionAndRotation(pos, Quaternion.LookRotation(dir));
         if (visual.TryGetComponent(out TrailRenderer trail)) trail.Clear();   // xóa vệt cũ
 
@@ -135,6 +139,7 @@ public class BulletManager : MonoBehaviour
             {
                 Bus<BulletHitEnemy>.Raise(new BulletHitEnemy(target));
             }
+            _bulletAudioSource.PlayOneShot(_bulletHitSound);
             // Sau này: xuyên giáp (b.Ammo.ArmorPenetrationLevel),
             // chảy máu (b.Ammo.ChanceToBleed), hiệu ứng va chạm tại hit.point...
         }

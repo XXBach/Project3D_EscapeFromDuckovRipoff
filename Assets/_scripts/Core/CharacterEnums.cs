@@ -23,6 +23,5 @@ public enum EnemyState
     Patrol = 1,
     Chase = 2,
     Attack = 3,
-    Effect = 4,
-    Dead = 5
+    Dead = 4
 }

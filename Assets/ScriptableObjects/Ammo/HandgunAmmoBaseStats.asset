@@ -15,7 +15,7 @@ MonoBehaviour:
   _name: HandgunAmmo
   _damageCoefficient: 1
   _moneyValue: 5
-  _speed: 6
+  _speed: 40
   _armorPenetrationLevel: 1
   _armorBreak: 0.72
   _weaponWearOut: 0.08

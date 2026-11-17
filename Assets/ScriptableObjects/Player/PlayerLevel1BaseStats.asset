@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterBaseStats
   _maxHealth: 100
   _baseSpeed: 2
-  _baseWeight: 45
+  _maxWeight: 30
   _baseEyeSight: 20
-  _hungryness: 100
-  _thirstyness: 100
+  _baseHungryness: 100
+  _baseThirstyness: 100

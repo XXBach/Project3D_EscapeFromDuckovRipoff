@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
-public class GunBehavior : MonoBehaviour, ILethality
+public class ManualGunBehavior : MonoBehaviour, ILethality
 {
     [Header("Prefabs")]
     [SerializeField] private Ammo _usingBullet;
@@ -10,19 +10,18 @@ public class GunBehavior : MonoBehaviour, ILethality
     [Tooltip("Bullet Spawn Point")]
     [SerializeField] private Transform _bulletSpawnPoint;
 
-    [Header("AudioClips")]
+    [Header("Audio")]
     [SerializeField] private AudioClip _reloadSound;
     [SerializeField] private AudioClip _shootingSound;
-
+    [SerializeField] private AudioSource _gunAudioSource;
     private int _currentAmmoAmount;
     private float _nearestShootingTime;
     private float _cooldownTime;
     private void Awake()
     {
-        _usingBullet ??= gameObject.GetComponent<Ammo>();
-        _usingGun ??= gameObject.GetComponent<RangedWeapon>();
         _usingGun.WeaponBasicSetup();
         _cooldownTime = CalculateCooldownTime(_usingGun.EffectiveStats.CurrentFireRate);
+        _gunAudioSource ??= GetComponent<AudioSource>();
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -51,6 +50,7 @@ public class GunBehavior : MonoBehaviour, ILethality
     {
         // Freeze khả năng bắn
         // Play âm thanh reload
+        _gunAudioSource.PlayOneShot(_reloadSound);
         // Hiện thanh tiến độ
         // Sau đó reset lại số đạn trong băng đạn
         // Unfreeze khả năng bắn
@@ -64,6 +64,7 @@ public class GunBehavior : MonoBehaviour, ILethality
         _nearestShootingTime = Time.time + _cooldownTime;
         BulletManager.Instance.Spawn(_bulletSpawnPoint.position, _bulletSpawnPoint.forward, _usingBullet.BaseStats.Speed, _usingGun.EffectiveStats.CurrentRange, CalculateShootingDamage(), _usingBullet.BaseStats, _usingGun.OwnerDomain);
         _currentAmmoAmount--;
+        _gunAudioSource.PlayOneShot(_shootingSound);
         Debug.Log("Gun fired. Ammo remaining: " + _currentAmmoAmount);
         // Cast ray từ vị trí bắn ra hướng bắn theo kỹ thuật raycast từng bước
         // Giữa mỗi viên sẽ có sự lệch vị trí sử dụng stat recoil của Gun

@@ -18,11 +18,7 @@ namespace StarterAssets
     public class ThirdPersonController : MonoBehaviour
     {
         [Header("Player")]
-        [Tooltip("Move speed of the character in m/s")]
-        public float MoveSpeed = 2.0f;
 
-        [Tooltip("Sprint speed of the character in m/s")]
-        public float SprintSpeed = 5.335f;
 
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
@@ -78,6 +74,17 @@ namespace StarterAssets
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
+        [Header("Aim")]
+        [SerializeField] private LayerMask _groundMask = ~0;
+        [Tooltip("Dead zone for aiming")]
+        [SerializeField] private float _aimDeadZone = 0.2f;
+        [Tooltip("Camera for aiming")]
+        [SerializeField] private Camera _mainCamera;
+        [Tooltip("Rotation speed for aiming")]
+        [SerializeField] private float _rotationSpeed = 0f;
+        [Tooltip("Crosshair prefabs")]
+        [SerializeField] private RectTransform _crosshair;
+        [SerializeField] private Canvas _canvas;
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
@@ -89,6 +96,11 @@ namespace StarterAssets
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
+        [Tooltip("Move speed of the character in m/s")]
+        public float MoveSpeed = 2.0f;
+
+        [Tooltip("Sprint speed of the character in m/s")]
+        public float SprintSpeed = 5.335f;
         public PlayerState MCState = PlayerState.Idle;
 
         // timeout deltatime
@@ -108,7 +120,7 @@ namespace StarterAssets
         private Animator _animator;
         private CharacterController _controller;
         private StarterAssetsInputs _input;
-        private GameObject _mainCamera;
+        
 
         private const float _threshold = 0.01f;
 
@@ -129,11 +141,7 @@ namespace StarterAssets
 
         private void Awake()
         {
-            // get a reference to our main camera
-            if (_mainCamera == null)
-            {
-                _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-            }
+
         }
 
         private void Start()
@@ -143,6 +151,8 @@ namespace StarterAssets
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
+            MoveSpeed = GetComponent<CharacterDataManager>().GetCurrentSpeed();
+            SprintSpeed = MoveSpeed * 2.0f;
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -228,34 +238,19 @@ namespace StarterAssets
 
         private void Move()
         {
-            // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 
-            // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
-
-            // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is no input, set the target speed to 0
-            if (_input.move == Vector2.zero)
-            {
-                targetSpeed = 0.0f;
-            }
-
-            // a reference to the players current horizontal velocity
             float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
             float speedOffset = 0.1f;
             float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
-            // accelerate or decelerate to target speed
             if (currentHorizontalSpeed < targetSpeed - speedOffset ||
                 currentHorizontalSpeed > targetSpeed + speedOffset)
             {
-                // creates curved result rather than a linear one giving a more organic speed change
-                // note T in Lerp is clamped, so we don't need to clamp our speed
                 _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
                     Time.deltaTime * SpeedChangeRate);
-
-                // round speed to 3 decimal places
                 _speed = Mathf.Round(_speed * 1000f) / 1000f;
             }
             else
@@ -266,31 +261,24 @@ namespace StarterAssets
             _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
             if (_animationBlend < 0.01f) _animationBlend = 0f;
 
-            // normalise input direction
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-            Vector3 inputRotation = new Vector3(_input.look.x, 0.0f, _input.look.y).normalized;
-
-            // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is a move input rotate player when the player is moving
-            if (_input.look != Vector2.zero)
+            // Xoay theo con trỏ chuột
+            if (TryGetAimDirection(out Vector3 aimDir))
             {
-                _targetRotation = Mathf.Atan2(inputRotation.x, inputRotation.z) * Mathf.Rad2Deg +
-                                  _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                    RotationSmoothTime);
+                _targetRotation = Mathf.Atan2(aimDir.x, aimDir.z) * Mathf.Rad2Deg;
 
-                // rotate to face input direction relative to camera position
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                float rotation = _rotationSpeed <= 0f
+                    ? _targetRotation
+                    : Mathf.MoveTowardsAngle(transform.eulerAngles.y, _targetRotation, _rotationSpeed * Time.deltaTime);
+
+                transform.rotation = Quaternion.Euler(0f, rotation, 0f);
             }
 
+            // Di chuyển theo hướng camera, độc lập với hướng nhìn
+            Vector3 inputDirection = GetCameraRelativeMoveDirection();
 
-            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-
-            // move the player
             _controller.Move(inputDirection * (_speed * Time.deltaTime) +
                              new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-            // update animator if using character
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
@@ -368,17 +356,13 @@ namespace StarterAssets
         }
         private void AimAndAttack()
         {
-            if(_input.aim)
-            {
-                //Đổi màu anim
-                //Đi chậm lại
-                //Giảm Recoil đi
-                Bus<Aim>.Raise(new Aim());
-            }
-            if (_input.attack)
-            {
+            var actions = _playerInput.actions;
+
+            if (actions["Aim"].IsPressed())
+                Bus<Aim>.Raise(new Aim(true));
+
+            if (actions["Attack"].IsPressed())
                 Bus<ShootTriggered>.Raise(new ShootTriggered());
-            }
         }
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {
@@ -418,6 +402,74 @@ namespace StarterAssets
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+            }
+        }
+        private bool TryGetMouseWorldPointPhysics(out Vector3 point)
+        {
+            point = default;
+            if (Mouse.current == null || _mainCamera == null) return false;
+            Vector2 mousePos = Mouse.current.position.ReadValue();
+            UpdateCursorCrosshair(mousePos);
+            Ray ray = _mainCamera.ScreenPointToRay(mousePos);
+
+            if (Physics.Raycast(ray, out RaycastHit hit, 200f, _groundMask, QueryTriggerInteraction.Ignore))
+            {
+                point = hit.point;
+                return true;
+            }
+
+            return false;
+        }
+
+        // Hướng nhìn (đã bỏ trục Y) từ player tới con trỏ chuột
+        private bool TryGetAimDirection(out Vector3 direction)
+        {
+            direction = default;
+            if (!TryGetMouseWorldPointPhysics(out Vector3 point)) return false;
+
+            direction = point - transform.position;
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude < _aimDeadZone * _aimDeadZone) return false;
+
+            direction.Normalize();
+            return true;
+        }
+        private Vector3 GetCameraRelativeMoveDirection()
+        {
+            if (_input.move == Vector2.zero || _mainCamera == null) return Vector3.zero;
+
+            Transform cam = _mainCamera.transform;
+
+            // Chiếu hướng camera xuống mặt phẳng ngang
+            Vector3 camForward = Vector3.ProjectOnPlane(cam.forward, Vector3.up);
+            Vector3 camRight = Vector3.ProjectOnPlane(cam.right, Vector3.up);
+
+            // Phòng trường hợp camera nhìn thẳng xuống đất (forward gần như song song trục Y)
+            if (camForward.sqrMagnitude < 0.0001f)
+                camForward = Vector3.ProjectOnPlane(cam.up, Vector3.up);
+
+            camForward.Normalize();
+            camRight.Normalize();
+
+            return (camForward * _input.move.y + camRight * _input.move.x).normalized;
+        }
+        private void UpdateCursorCrosshair(Vector2 mousePos)
+        {
+            if (_canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                _crosshair.position = mousePos;
+            }
+            else
+            {
+                // Screen Space - Camera / World Space
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    (RectTransform)_canvas.transform,
+                    mousePos,
+                    _canvas.worldCamera,
+                    out Vector2 localPoint);
+
+                _crosshair.localPosition = localPoint;
             }
         }
     }

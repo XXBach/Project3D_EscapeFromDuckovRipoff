@@ -32,7 +32,7 @@ public class RangedWeapon : Item, IRepairable
         _baseStats = baseStats;
         _effectiveStats = effectiveStats;
     }
-
+    public RangedWeapon() { }
     public void WeaponBasicSetup()
     {
         _effectiveStats.CurrentDamage = _baseStats.BaseDamage;

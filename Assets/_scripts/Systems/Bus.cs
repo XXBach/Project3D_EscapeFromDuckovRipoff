@@ -36,6 +36,8 @@ public struct Reload : IEvent
 }
 public struct Aim : IEvent
 {
+    public readonly bool _isAiming;
+    public Aim(bool isAiming) => _isAiming = isAiming;
 }
 public struct BulletHitEnemy : IEvent
 {
@@ -52,4 +54,9 @@ public struct BulletHitPlayer : IEvent
     {
         _target = target;
     }
+}
+public struct HealthChanged : IEvent
+{
+    public readonly CharacterDataManager _character;
+    public HealthChanged(CharacterDataManager character) => _character = character;
 }

@@ -16,7 +16,7 @@ MonoBehaviour:
   _weight: 0.7
   _baseDamage: 14
   _overRangeMultiplier: 0
-  _fireRate: 0
+  _fireRate: 4
   _magazineCapacity: 13
   _reloadTime: 1.1
   _bulletSpeed: 68

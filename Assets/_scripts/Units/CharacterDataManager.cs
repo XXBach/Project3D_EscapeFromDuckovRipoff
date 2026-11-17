@@ -22,6 +22,7 @@ public class CharacterDataManager : MonoBehaviour
     private CharacterCurrentStats _charCurrentStats;
     private void Awake()
     {
+        _charCurrentStats = new CharacterCurrentStats();
         _charCurrentStats.MaxHealth = _charBaseStats.MaxHealth;
         _charCurrentStats.CurrentHealth = _charBaseStats.MaxHealth;
         _charCurrentStats.CurrentSpeed = _charBaseStats.BaseSpeed;
@@ -30,6 +31,7 @@ public class CharacterDataManager : MonoBehaviour
         _charCurrentStats.CurrentEyeSight = _charBaseStats.BaseEyeSight;
         _charCurrentStats.CurrentHungryness = _charBaseStats.Hungryness;
         _charCurrentStats.CurrentThirstyness = _charBaseStats.Thirstyness;
+        Bus<Aim>.OnEvent += HandleAim;
     }
     public void HealthChange(float changeAmount, bool isTakeDamage)
     {
@@ -48,24 +50,27 @@ public class CharacterDataManager : MonoBehaviour
                     Bus<CharacterDied>.Raise(new CharacterDied(this));
                 }
             }
-            if (isTakeDamage)
-            {
-                _charCurrentStats.CurrentHealth -= changeAmount;
-                if (_charDomain == Domain.Enemy)
-                {
-                    Destroy(this.gameObject);
-                    Bus<CharacterDied>.Raise(new CharacterDied(this));
-                }
-                else
-                {
-                    Bus<GameOver>.Raise();
-                    Bus<CharacterDied>.Raise(new CharacterDied(this));
-                }
-            }
             else
             {
-                _charCurrentStats.CurrentHealth += changeAmount;
+                _charCurrentStats.CurrentHealth -= changeAmount;
+                if (_charCurrentStats.CurrentHealth <= 0)
+                {
+                    if (_charDomain == Domain.Enemy)
+                    {
+                        Destroy(this.gameObject);
+                        Bus<CharacterDied>.Raise(new CharacterDied(this));
+                    }
+                    else
+                    {
+                        Bus<GameOver>.Raise();
+                        Bus<CharacterDied>.Raise(new CharacterDied(this));
+                    }
+                }
             }
+        }
+        else
+        {
+            _charCurrentStats.CurrentHealth += changeAmount;
         }
     }
     public void SpeedChange(float changeAmount, bool isSlowdown)
@@ -139,5 +144,18 @@ public class CharacterDataManager : MonoBehaviour
     public Domain GetDomain()
     {
         return this._charDomain;
+    }
+    public void HandleAim(Aim aimEvent)
+    {
+        //if (aimEvent.IsAiming)
+        //{
+        //    EyeSightChange(5f, true);
+        //    SpeedChange(2f, true);
+        //}
+        //else
+        //{
+        //    EyeSightChange(5f, false);
+        //    SpeedChange(2f, false);
+        //}
     }
 }
