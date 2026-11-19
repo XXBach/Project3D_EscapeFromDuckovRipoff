@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Events;
-
+using DG.Tweening;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -96,6 +96,8 @@ namespace StarterAssets
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
+        private Vector3 _originalCrosshairRotation;
+        private Vector3 _originalCrosshairScale;
         [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
 
@@ -141,7 +143,9 @@ namespace StarterAssets
 
         private void Awake()
         {
-
+            Bus<SpeedChange>.OnEvent += HandleSpeedChange;
+            _originalCrosshairScale = _crosshair.localScale;
+            _originalCrosshairRotation = _crosshair.localRotation.eulerAngles;
         }
 
         private void Start()
@@ -361,6 +365,9 @@ namespace StarterAssets
             if (actions["Aim"].IsPressed())
                 Bus<Aim>.Raise(new Aim(true));
 
+            if(actions["Aim"].WasReleasedThisFrame())
+                Bus<Aim>.Raise(new Aim(false));
+
             if (actions["Attack"].IsPressed())
                 Bus<ShootTriggered>.Raise(new ShootTriggered());
         }
@@ -470,6 +477,14 @@ namespace StarterAssets
                     out Vector2 localPoint);
 
                 _crosshair.localPosition = localPoint;
+            }
+        }
+        private void HandleSpeedChange(SpeedChange args)
+        {
+            if (args._character.gameObject == this.gameObject)
+            {
+                MoveSpeed = args._character.GetCurrentSpeed();
+                SprintSpeed = MoveSpeed * 2.0f;
             }
         }
     }

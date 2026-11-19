@@ -35,7 +35,8 @@ public class CharacterDataManager : MonoBehaviour
     }
     public void HealthChange(float changeAmount, bool isTakeDamage)
     {
-        if(isTakeDamage)
+        
+        if (isTakeDamage)
         {
             if(_charCurrentStats.CurrentHealth <= 0)
             {
@@ -67,17 +68,21 @@ public class CharacterDataManager : MonoBehaviour
                     }
                 }
             }
+            Debug.Log($"Health changed for character: {this.name}, new health: {_charCurrentStats.CurrentHealth}");
+            Bus<HealthChanged>.Raise(new HealthChanged(this));
         }
         else
         {
             _charCurrentStats.CurrentHealth += changeAmount;
+            Bus<HealthChanged>.Raise(new HealthChanged(this));
         }
     }
-    public void SpeedChange(float changeAmount, bool isSlowdown)
+    public void SpeedChange (float changeMultiplier, bool isSlowdown)
     {
-        if(isSlowdown) _charCurrentStats.CurrentSpeed = Mathf.Min(_charCurrentStats.CurrentSpeed, (_charCurrentStats.CurrentSpeed - changeAmount));
-        else _charCurrentStats.CurrentSpeed = Mathf.Max(_charCurrentStats.CurrentSpeed, (_charCurrentStats.CurrentSpeed + changeAmount));
+        if (isSlowdown) _charCurrentStats.CurrentSpeed = Mathf.Min(_charCurrentStats.CurrentSpeed, (_charCurrentStats.CurrentSpeed * changeMultiplier));
+        else _charCurrentStats.CurrentSpeed = Mathf.Max(_charCurrentStats.CurrentSpeed, (_charCurrentStats.CurrentSpeed * changeMultiplier));
         _charCurrentStats.CurrentSpeed = Mathf.Clamp(_charCurrentStats.CurrentSpeed, 0f, 30f);
+        Bus<SpeedChange>.Raise(new SpeedChange(this));
     }
     public void WeightChange(float changeAmount, bool isHeavier)
     {

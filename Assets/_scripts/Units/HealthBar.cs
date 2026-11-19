@@ -3,10 +3,12 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    [SerializeField] private Image _healthBar;
+    [SerializeField] private Slider _healthBar;
     private void Awake()
     {
         this.gameObject.SetActive(false);
+        _healthBar ??= GetComponent<Slider>();
+        Bus<HealthChanged>.OnEvent += UpdateHealthBar;
     }
     public void ShowHealthBar()
     {
@@ -18,10 +20,17 @@ public class HealthBar : MonoBehaviour
     }
     public void UpdateHealthBar(HealthChanged args)
     {
-        _healthBar.fillAmount = args._character.GetCurrentHealth() / args._character.GetMaxHealth();
+        Debug.Log($"Health Changed Event Received for Character: {args._character.name}");
+        ShowHealthBar();
+        _healthBar.value = args._character.GetCurrentHealth() / args._character.GetMaxHealth();
+        Invoke(nameof(HideHealthBar), 2f); // Hide the health bar after 2 seconds
     }
     public void OnEnable()
     {
-        Bus<HealthChanged>.OnEvent += UpdateHealthBar;
+        
+    }
+    public void OnDisable()
+    {
+        Bus<HealthChanged>.OnEvent -= UpdateHealthBar;
     }
 }

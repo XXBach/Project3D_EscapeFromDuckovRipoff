@@ -232,7 +232,6 @@ MonoBehaviour:
   _reloadSound: {fileID: 8300000, guid: 3de7713f7dd4a144fb85bdf1efdc1ead, type: 3}
   _shootingSound: {fileID: 8300000, guid: 99348524f0ef5b3469b6d1976f17370c, type: 3}
   _gunAudioSource: {fileID: 2576628914327403810}
-  _reloadBar: {fileID: 0}
   _reloadDuration: 2
 --- !u!82 &2576628914327403810
 AudioSource:

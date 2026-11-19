@@ -4,7 +4,11 @@ using UnityEngine.Events;
 public class Bus<T> where T : struct, IEvent
 {
     public static event UnityAction<T> OnEvent;
-    public static void Raise(T _event) => OnEvent?.Invoke(_event);
+    public static void Raise(T _event)
+    {
+        Debug.Log($"Event Raised: {typeof(T).Name}");
+        OnEvent?.Invoke(_event);
+    }
     public static void Raise() => OnEvent?.Invoke(default);
     public static void Reset() => OnEvent = null;
 //#if UNITY_EDITOR
@@ -59,4 +63,9 @@ public struct HealthChanged : IEvent
 {
     public readonly CharacterDataManager _character;
     public HealthChanged(CharacterDataManager character) => _character = character;
+}
+public struct SpeedChange : IEvent
+{
+    public readonly CharacterDataManager _character;
+    public SpeedChange(CharacterDataManager character) => _character = character;
 }
