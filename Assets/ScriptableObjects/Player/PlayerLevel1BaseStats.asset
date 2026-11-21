@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55a1a81fe4543cf42b686afe839355fe, type: 3}
   m_Name: PlayerLevel1BaseStats
   m_EditorClassIdentifier: Assembly-CSharp::CharacterBaseStats
-  _maxHealth: 100
-  _baseSpeed: 2
+  _maxHealth: 50
+  _baseSpeed: 3
   _maxWeight: 30
   _baseEyeSight: 20
   _baseHungryness: 100

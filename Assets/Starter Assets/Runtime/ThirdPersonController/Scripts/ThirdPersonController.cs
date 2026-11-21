@@ -18,7 +18,8 @@ namespace StarterAssets
     public class ThirdPersonController : MonoBehaviour
     {
         [Header("Player")]
-
+        [Tooltip("Speed source class")]
+        public ISpeedSource SpeedSource;
 
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
@@ -143,7 +144,6 @@ namespace StarterAssets
 
         private void Awake()
         {
-            Bus<SpeedChange>.OnEvent += HandleSpeedChange;
             _originalCrosshairScale = _crosshair.localScale;
             _originalCrosshairRotation = _crosshair.localRotation.eulerAngles;
         }
@@ -155,8 +155,7 @@ namespace StarterAssets
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
-            MoveSpeed = GetComponent<CharacterDataManager>().GetCurrentSpeed();
-            SprintSpeed = MoveSpeed * 2.0f;
+            SpeedSource = GetComponent<ISpeedSource>();
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -242,6 +241,9 @@ namespace StarterAssets
 
         private void Move()
         {
+            float effectiveSpeed = SpeedSource.EffectiveSpeed;
+            MoveSpeed = effectiveSpeed;
+            SprintSpeed = effectiveSpeed * 2.0f;
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero) targetSpeed = 0.0f;
 

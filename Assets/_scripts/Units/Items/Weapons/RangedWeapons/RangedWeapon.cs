@@ -10,6 +10,8 @@ public class CurrentStats
     public float CurrentRange { get; set; }
     public float CurrentCritDamageMultiplier { get; set; }
     public float CurrentADSTime { get; set; }
+    public float CurrentHipFireSpread { get; set; }
+    public float CurrentADSSpread { get; set; }
     public float CurrentExplosionDamageCoefficient { get; set; }
     public float CurrentVerticalRecoil { get; set; }
     public float CurrentHorizontalRecoil { get; set; }
@@ -26,7 +28,10 @@ public class RangedWeapon : Item, IRepairable
     {
         get { return this._effectiveStats; }
     }
-
+    public FireArmsBaseStats BaseStats
+    {
+        get { return this._baseStats; }
+    }
     public RangedWeapon (FireArmsBaseStats baseStats, CurrentStats effectiveStats)
     {
         _baseStats = baseStats;
@@ -48,6 +53,8 @@ public class RangedWeapon : Item, IRepairable
         _effectiveStats.CurrentHorizontalRecoil = _baseStats.HorizontalRecoil;
         _effectiveStats.CurrentDurability = _baseStats.Durability;
         _effectiveStats.CurrentChanceToBleed = _baseStats.ChanceToBleed;
+        _effectiveStats.CurrentADSSpread = _baseStats.ADSSpread;
+        _effectiveStats.CurrentHipFireSpread = _baseStats.HipFireSpread;
     }
     public virtual void TakeDurabilityDamage(float damage)
     {

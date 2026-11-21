@@ -100,14 +100,14 @@ public class BulletManager : MonoBehaviour
         //_bulletAudioSource.PlayOneShot(_bulletFlyingSound);
         visual.SetPositionAndRotation(pos, Quaternion.LookRotation(dir));
         if (visual.TryGetComponent(out TrailRenderer trail)) trail.Clear();   // xóa vệt cũ
-
+        Debug.Log($"Spawned bullet at {pos} with direction {dir}, speed {speed}, range {range}, damage {gunDamage * ammo.DamageCoefficient}, owner {owner}");
         _currentBullets.Add(new AmmoVisualData
         {
             CurrentPosition = pos,
             FiredDirection = dir,
             Speed = speed,
             RemainingRange = range,
-            Damage = gunDamage * ammo.DamageCoefficient,   // sát thương súng × hệ số đạn
+            Damage = gunDamage,   // sát thương súng × hệ số đạn
             OwnerDomain = owner,
             AmmoStats = ammo,
             Visual = visual,

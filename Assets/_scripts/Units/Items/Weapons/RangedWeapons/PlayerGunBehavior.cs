@@ -1,8 +1,10 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
-public class PlayerGunBehavior : MonoBehaviour, ILethality
+public class PlayerGunBehavior : MonoBehaviour, ILethality, IAimSource, ISpeedModifierSource
 {
     [Header("Prefabs")]
     [SerializeField] private Ammo _usingBullet;
@@ -20,11 +22,19 @@ public class PlayerGunBehavior : MonoBehaviour, ILethality
     [Header("Reload")]
     [SerializeField] private float _reloadDuration = 2f; // Duration of the reload in seconds
 
-    public static float _aimProgress;
+    [Header("Recoil")]
+    [SerializeField] private float _recoilBloom;
+    [SerializeField] private float _recoilYawDrift;
+    [SerializeField] private float _recoilPitchDrift;
+
+    public float _aimProgress;
     private int _currentAmmoAmount;
     private float _nearestShootingTime;
     private float _cooldownTime;
     private bool _isReloading;
+    private bool _isAiming;
+    private float _effectiveSpread;
+    private float _baseSpread;
     private void Awake()
     {
         _usingGun.WeaponBasicSetup();
@@ -42,7 +52,8 @@ public class PlayerGunBehavior : MonoBehaviour, ILethality
     // Update is called once per frame
     void Update()
     {
-        
+        UpdateAimProgress();
+        UpdateSpread();
     }
     private void OnEnable()
     {
@@ -116,17 +127,33 @@ public class PlayerGunBehavior : MonoBehaviour, ILethality
         {
             return;
         }
-        if(aimEvent._isAiming)
-        {
-            _aimProgress = Mathf.Clamp01(_aimProgress + Time.deltaTime);
-        }
-        else
-        {
-            _aimProgress = Mathf.Clamp01(_aimProgress - Time.deltaTime * 2.5f);
-        }
+        _isAiming = aimEvent._isAiming;
         // Khi Aim thì sẽ giảm độ giật của Gun
         // Khi Aim thì sẽ giảm tốc độ của Player
         // Play hiệu ứng Aim trên CrossHair
+    }
+    private void UpdateAimProgress()
+    {
+        // Đang reload thì không được aim, và aim đang có sẽ tự thu về
+        bool wantsAim = _isAiming && !_isReloading;
+
+        float adsTime = Mathf.Max(0.01f, _usingGun.EffectiveStats.CurrentADSTime); // tránh chia 0
+        float target = wantsAim ? 1f : 0f;
+        float speed = wantsAim ? 1f / adsTime
+                               : 2.5f / adsTime;
+
+        _aimProgress = Mathf.MoveTowards(_aimProgress, target, speed * Time.deltaTime);
+        _baseSpread = Mathf.Lerp(_usingGun.EffectiveStats.CurrentHipFireSpread, _usingGun.EffectiveStats.CurrentADSSpread, _aimProgress);
+    }
+    private void UpdateSpread()
+    {
+        if(Time.time - _nearestShootingTime >= _usingGun.BaseStats.RecoilRecoveryDelay)
+        {
+            _recoilBloom = Mathf.MoveTowards(_recoilBloom, 0, _usingGun.BaseStats.RecoilRecoverySpeed * Time.deltaTime);
+            _recoilYawDrift = Mathf.MoveTowards(_recoilYawDrift, 0, _usingGun.BaseStats.RecoilRecoverySpeed * Time.deltaTime);
+            _recoilPitchDrift = Mathf.MoveTowards(_recoilPitchDrift, 0, _usingGun.BaseStats.RecoilRecoverySpeed * Time.deltaTime);
+        }
+        _effectiveSpread = Mathf.Clamp((_baseSpread + _recoilBloom), 0, _usingGun.BaseStats.MaxSpread);
     }
     public float CalculateCooldownTime(float fireRate, float modifier = 0)
     {
@@ -137,4 +164,15 @@ public class PlayerGunBehavior : MonoBehaviour, ILethality
     {
         return _usingGun.EffectiveStats.CurrentDamage * _usingBullet.BaseStats.DamageCoefficient + modifier;
     }
+    public float AimProgress => _aimProgress;
+    public float SpeedMultiplier
+    {
+        get
+        {
+            float hip = _usingGun.BaseStats.MovementSpeedCoefficient;
+            float ads = _usingGun.BaseStats.ADSMovementCoefficient;
+            return hip * Mathf.Lerp(hip, ads, _aimProgress);
+        }
+    }
+
 }

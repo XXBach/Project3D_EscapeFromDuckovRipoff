@@ -33,3 +33,8 @@ MonoBehaviour:
   _horizontalRecoil: 30
   _durability: 100
   _chanceToBleed: 0
+  _recoilToAimSensitivityADSCoefficient: 1.2
+  _recoilRecoverySpeed: 0.5
+  _recoilRecoveryDelay: 0.5
+  _maxSpread: 2
+  _recoilToDegreesCoefficient: 1.5

@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 5195570}
   - component: {fileID: 5195572}
   - component: {fileID: 5195571}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -313,7 +313,7 @@ GameObject:
   - component: {fileID: 13454967}
   - component: {fileID: 13454969}
   - component: {fileID: 13454968}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -807,7 +807,6 @@ GameObject:
   - component: {fileID: 485360517}
   - component: {fileID: 485360516}
   - component: {fileID: 485360515}
-  - component: {fileID: 485360519}
   - component: {fileID: 485360520}
   - component: {fileID: 485360521}
   m_Layer: 6
@@ -912,20 +911,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1521245197}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!114 &485360519
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 485360514}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6ecb2dbfc98ab64f9124457d9d5162c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterDataManager
-  _charBaseStats: {fileID: 11400000, guid: 18788b93d913cc8449523a441755b5cb, type: 2}
-  _charDomain: 2
 --- !u!82 &485360520
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1253,7 +1238,7 @@ GameObject:
   - component: {fileID: 627184536}
   - component: {fileID: 627184538}
   - component: {fileID: 627184537}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1381,6 +1366,17 @@ Transform:
   - {fileID: 909825308}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &770299465 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 837184693081775045, guid: 9d27e4b6ec55b6e4788d386666d07ef6, type: 3}
+  m_PrefabInstance: {fileID: 9066337042687375521}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51791a3a08c51af42a7731a199538e91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GunBehavior
 --- !u!1 &807229714
 GameObject:
   m_ObjectHideFlags: 0
@@ -1393,7 +1389,7 @@ GameObject:
   - component: {fileID: 807229718}
   - component: {fileID: 807229717}
   - component: {fileID: 807229716}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1505,7 +1501,7 @@ GameObject:
   - component: {fileID: 889592663}
   - component: {fileID: 889592662}
   - component: {fileID: 889592661}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: EnemyCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1905,8 +1901,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   _crosshairRectTransform: {fileID: 1424446049}
   _crosshairImage: {fileID: 1424446050}
+  _aimSourceBehaviour: {fileID: 770299465}
   _targetScale: {x: 1.5, y: 1.5, z: 1.5}
-  _targetColor: {r: 0.97735846, g: 0, b: 0.9438452, a: 0}
+  _targetColor: {r: 1, g: 0, b: 0, a: 0}
   _targetRotation: {x: 0, y: 0, z: 180}
 --- !u!1 &1466395687
 GameObject:
@@ -1917,7 +1914,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1466395688}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2057,6 +2054,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1521245197}
   - component: {fileID: 1521245198}
+  - component: {fileID: 1521245199}
   m_Layer: 6
   m_Name: Target
   m_TagString: Untagged
@@ -2095,8 +2093,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c69064f32ed09d8419b9b799308872d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  _enemyDataManager: {fileID: 485360519}
+  _enemyDataManager: {fileID: 1521245199}
   _enemyNavMeshAgent: {fileID: 485360521}
+--- !u!114 &1521245199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1521245196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ecb2dbfc98ab64f9124457d9d5162c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterDataManager
+  _charBaseStats: {fileID: 11400000, guid: 18788b93d913cc8449523a441755b5cb, type: 2}
+  _charDomain: 2
 --- !u!1 &1588265974
 GameObject:
   m_ObjectHideFlags: 0
@@ -2517,7 +2529,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1757791956}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BulletSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}

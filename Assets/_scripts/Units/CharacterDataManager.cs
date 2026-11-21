@@ -15,11 +15,15 @@ public class CharacterCurrentStats
     public float CurrentThirstyness;
 }
 
-public class CharacterDataManager : MonoBehaviour
+public class CharacterDataManager : MonoBehaviour, ISpeedSource
 {
     [SerializeField] private CharacterBaseStats _charBaseStats;
     [SerializeField] private Domain _charDomain = Domain.None;
+    public float EffectiveSpeed => GetEffectiveSpeed();
     private CharacterCurrentStats _charCurrentStats;
+    private bool _isAiming;
+    private float _weaponSpeedMultiplier = 1f;
+    private ISpeedModifierSource[] _speedSources = System.Array.Empty<ISpeedModifierSource>();
     private void Awake()
     {
         _charCurrentStats = new CharacterCurrentStats();
@@ -31,7 +35,18 @@ public class CharacterDataManager : MonoBehaviour
         _charCurrentStats.CurrentEyeSight = _charBaseStats.BaseEyeSight;
         _charCurrentStats.CurrentHungryness = _charBaseStats.Hungryness;
         _charCurrentStats.CurrentThirstyness = _charBaseStats.Thirstyness;
-        Bus<Aim>.OnEvent += HandleAim;
+        if(_charDomain == Domain.Player)
+        {
+            Bus<Aim>.OnEvent += HandleAim;
+        }
+    }
+    private void Start()
+    {
+        RefreshSpeedSources();
+    }
+    public void RefreshSpeedSources()
+    {
+        _speedSources = GetComponentsInChildren<ISpeedModifierSource>(true);
     }
     public void HealthChange(float changeAmount, bool isTakeDamage)
     {
@@ -152,15 +167,19 @@ public class CharacterDataManager : MonoBehaviour
     }
     public void HandleAim(Aim aimEvent)
     {
-        //if (aimEvent.IsAiming)
-        //{
-        //    EyeSightChange(5f, true);
-        //    SpeedChange(2f, true);
-        //}
-        //else
-        //{
-        //    EyeSightChange(5f, false);
-        //    SpeedChange(2f, false);
-        //}
+        _isAiming = aimEvent._isAiming;
+    }
+    public void SetWeaponSpeedMultiplier(float multiplier)
+    {
+        _weaponSpeedMultiplier = Mathf.Max(0f, multiplier);
+    }
+
+    // Tốc độ thực tế = tốc độ gốc (đã tính cân nặng/debuff) × hệ số vũ khí
+    public float GetEffectiveSpeed()
+    {
+        float multiplier = 1f;
+        foreach (var source in _speedSources)
+            multiplier *= source.SpeedMultiplier;
+        return _charCurrentStats.CurrentSpeed * multiplier;
     }
 }

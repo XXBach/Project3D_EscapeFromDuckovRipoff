@@ -3,6 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "FireArmsBaseStats", menuName = "Scriptable Objects/FireArmsBaseStats")]
 public class FireArmsBaseStats : ScriptableObject
 {
+    [Header("Base Stats")]
     [SerializeField] private string _name;
     [SerializeField] private float _weight;
     [SerializeField] private float _baseDamage;
@@ -25,7 +26,13 @@ public class FireArmsBaseStats : ScriptableObject
     [SerializeField] private float _durability;
     [SerializeField] private float _chanceToBleed;
 
-    
+    [Header("Configurations")]
+    [SerializeField] private float _recoilToAimSensitivityADSCoefficient;
+    [SerializeField] private float _recoilRecoverySpeed;
+    [SerializeField] private float _recoilRecoveryDelay;
+    [SerializeField] private float _maxSpread;
+    [SerializeField] private float _recoilToDegreesCoefficient;
+
     public string Name { get { return _name; } }
     public float Weight { get { return _weight; } }
     public float BaseDamage { get { return _baseDamage; } }
@@ -47,5 +54,10 @@ public class FireArmsBaseStats : ScriptableObject
     public float HorizontalRecoil { get { return _horizontalRecoil; } }
     public float Durability { get { return _durability; } }
     public float ChanceToBleed { get { return _chanceToBleed; } }
+    public float RecoilToAimSensitivityADSCoefficient { get { return _recoilToAimSensitivityADSCoefficient; } }
+    public float RecoilRecoverySpeed { get { return _recoilRecoverySpeed; } }
+    public float RecoilRecoveryDelay { get { return _recoilRecoveryDelay; } }
+    public float MaxSpread { get { return _maxSpread; } }
+    public float RecoilToDegreesCoefficient { get { return _recoilToDegreesCoefficient; } }
 
 }
