@@ -27,7 +27,7 @@ public class FireArmsBaseStats : ScriptableObject
     [SerializeField] private float _chanceToBleed;
 
     [Header("Configurations")]
-    [SerializeField] private float _recoilToAimSensitivityADSCoefficient;
+    [SerializeField] private float _recoilADSCoefficient;
     [SerializeField] private float _recoilRecoverySpeed;
     [SerializeField] private float _recoilRecoveryDelay;
     [SerializeField] private float _maxSpread;
@@ -54,7 +54,7 @@ public class FireArmsBaseStats : ScriptableObject
     public float HorizontalRecoil { get { return _horizontalRecoil; } }
     public float Durability { get { return _durability; } }
     public float ChanceToBleed { get { return _chanceToBleed; } }
-    public float RecoilToAimSensitivityADSCoefficient { get { return _recoilToAimSensitivityADSCoefficient; } }
+    public float RecoilADSCoefficient { get { return _recoilADSCoefficient; } }
     public float RecoilRecoverySpeed { get { return _recoilRecoverySpeed; } }
     public float RecoilRecoveryDelay { get { return _recoilRecoveryDelay; } }
     public float MaxSpread { get { return _maxSpread; } }

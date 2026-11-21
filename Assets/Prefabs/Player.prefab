@@ -232,7 +232,11 @@ MonoBehaviour:
   _reloadSound: {fileID: 8300000, guid: 3de7713f7dd4a144fb85bdf1efdc1ead, type: 3}
   _shootingSound: {fileID: 8300000, guid: 99348524f0ef5b3469b6d1976f17370c, type: 3}
   _gunAudioSource: {fileID: 2576628914327403810}
-  _reloadDuration: 2
+  _recoilBloom: 0
+  _recoilYawDrift: 0
+  _recoilPitchDrift: 0
+  _bloomPerShot: 0.6
+  _aimProgress: 0
 --- !u!82 &2576628914327403810
 AudioSource:
   m_ObjectHideFlags: 0

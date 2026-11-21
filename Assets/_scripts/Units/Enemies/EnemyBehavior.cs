@@ -13,7 +13,7 @@ public class EnemyBehavior : MonoBehaviour
 
     private void Awake()
     {
-        _enemySpeed = _enemyDataManager.GetCurrentSpeed();
+
         _currentEnemyState = EnemyState.Idle;
         _previousEnemyState = EnemyState.Idle;
     }
@@ -21,6 +21,7 @@ public class EnemyBehavior : MonoBehaviour
     void Start()
     {
         _enemyNavMeshAgent.speed = _enemySpeed;
+        _enemySpeed = _enemyDataManager.GetCurrentSpeed();
     }
 
     // Update is called once per frame
