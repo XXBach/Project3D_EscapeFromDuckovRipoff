@@ -3,6 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CharacterBaseStats", menuName = "Scriptable Objects/CharacterBaseStats")]
 public class CharacterBaseStats : ScriptableObject
 {
+    [Header("Character's Base Stats")]
     [SerializeField] private float _maxHealth;
     [SerializeField] private float _baseSpeed;
     [SerializeField] private float _maxWeight;

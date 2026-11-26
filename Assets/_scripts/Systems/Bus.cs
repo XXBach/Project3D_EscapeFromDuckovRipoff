@@ -69,3 +69,8 @@ public struct SpeedChange : IEvent
     public readonly CharacterDataManager _character;
     public SpeedChange(CharacterDataManager character) => _character = character;
 }
+public struct Dodge : IEvent
+{
+    public readonly bool IsInvincible;
+    public Dodge(bool isInvincible) => IsInvincible = isInvincible;
+}

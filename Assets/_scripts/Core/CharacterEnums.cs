@@ -8,13 +8,11 @@ public enum Domain
 
 public enum PlayerState
 {
-    Idle = 0,
-    Move = 1,
-    Sprint = 2,
-    Dodge = 3,
-    Reload = 4,
-    ThirstyAndHungry = 5,
-    Dead = 6
+    Normal = 0,
+    Dodge = 1,
+    Interacting = 2,
+    Looting = 3,
+    Dead = 4
 }
 
 public enum EnemyState

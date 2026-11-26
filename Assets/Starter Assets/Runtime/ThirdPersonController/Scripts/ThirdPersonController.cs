@@ -2,6 +2,8 @@
 using UnityEngine.Animations;
 using UnityEngine.Events;
 using DG.Tweening;
+using System.Collections;
+
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -86,6 +88,15 @@ namespace StarterAssets
         [Tooltip("Crosshair prefabs")]
         [SerializeField] private RectTransform _crosshair;
         [SerializeField] private Canvas _canvas;
+
+        [Header("Dodge")]
+        [SerializeField] private PlayerDodgeConfiguration _dodgeConfig;
+        private float _dodgeStartTime;
+        private Vector3 _dodgeDirection;
+        private float _nextDodgeAvailableTime;
+        public bool IsInvincible;
+        
+
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
@@ -104,7 +115,7 @@ namespace StarterAssets
 
         [Tooltip("Sprint speed of the character in m/s")]
         public float SprintSpeed = 5.335f;
-        public PlayerState MCState = PlayerState.Idle;
+        public PlayerState MCState = PlayerState.Normal;
 
         // timeout deltatime
         private float _jumpTimeoutDelta;
@@ -146,6 +157,7 @@ namespace StarterAssets
         {
             _originalCrosshairScale = _crosshair.localScale;
             _originalCrosshairRotation = _crosshair.localRotation.eulerAngles;
+            IsInvincible = false;
         }
 
         private void Start()
@@ -167,7 +179,7 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
-            MCState = PlayerState.Idle;
+            MCState = PlayerState.Normal;
         }
 
         private void Update()
@@ -176,8 +188,10 @@ namespace StarterAssets
 
             JumpAndGravity();
             GroundedCheck();
+            HandleDodge();
             Move();
             AimAndAttack();
+
         }
 
         private void LateUpdate()
@@ -366,12 +380,33 @@ namespace StarterAssets
 
             if (actions["Aim"].IsPressed())
                 Bus<Aim>.Raise(new Aim(true));
+           
 
             if(actions["Aim"].WasReleasedThisFrame())
                 Bus<Aim>.Raise(new Aim(false));
 
             if (actions["Attack"].IsPressed())
                 Bus<ShootTriggered>.Raise(new ShootTriggered());
+        }
+        private void HandleDodge()
+        {
+            var actions = _playerInput.actions;
+            if (actions["Dodge"].WasPressedThisFrame())
+            {
+                _dodgeStartTime = Time.time;
+                if (_dodgeStartTime >= _nextDodgeAvailableTime)
+                {
+                    MCState = PlayerState.Dodge;
+                    Bus<Dodge>.Raise(new Dodge(IsInvincible));
+                    _nextDodgeAvailableTime = _dodgeStartTime + _dodgeConfig.DodgeTime + _dodgeConfig.DodgeCooldown;
+                    if (actions["Move"].IsPressed()) _dodgeDirection = GetCameraRelativeMoveDirection();
+                    else _dodgeDirection = Vector3.forward;
+                }
+            }
+        }
+        private IEnumerator DodgingCoroutine()
+        {
+            
         }
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {

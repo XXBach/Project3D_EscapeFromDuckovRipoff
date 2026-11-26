@@ -14,6 +14,7 @@ namespace StarterAssets
 		public bool attack;
 		public bool jump;
 		public bool sprint;
+		public bool dodge;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -54,6 +55,10 @@ namespace StarterAssets
             Debug.Log($"OnAttack isPressed={value.isPressed} frame={Time.frameCount}");
             AttackInput(value.isPressed);
         }
+		public void OnDodge(InputValue value)
+		{
+			DodgeInput(value.isPressed);
+		}
 #endif
 
 
@@ -83,6 +88,10 @@ namespace StarterAssets
 		public void AttackInput(bool newAttackState)
 		{
 			attack = newAttackState;
+		}
+		public void DodgeInput(bool newDodgeState)
+		{
+			dodge = newDodgeState;
 		}
 		private void OnApplicationFocus(bool hasFocus)
 		{

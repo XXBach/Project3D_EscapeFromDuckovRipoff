@@ -215,7 +215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.046277955, g: 1, b: 0.0039215684, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -318,6 +318,7 @@ GameObject:
   - component: {fileID: 205015457}
   - component: {fileID: 205015458}
   - component: {fileID: 205015459}
+  - component: {fileID: 205015460}
   m_Layer: 5
   m_Name: EnemyHealthBar
   m_TagString: Untagged
@@ -411,6 +412,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HealthBar
   _healthBar: {fileID: 205015458}
   _owner: {fileID: 1521245199}
+  _canvasGroup: {fileID: 205015460}
+--- !u!225 &205015460
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 205015456}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &226179413
 GameObject:
   m_ObjectHideFlags: 0
@@ -497,6 +511,7 @@ GameObject:
   - component: {fileID: 331102636}
   - component: {fileID: 331102637}
   - component: {fileID: 331102638}
+  - component: {fileID: 331102639}
   m_Layer: 5
   m_Name: HealthBar
   m_TagString: Untagged
@@ -590,6 +605,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HealthBar
   _healthBar: {fileID: 331102637}
   _owner: {fileID: 1892734883}
+  _canvasGroup: {fileID: 331102639}
+--- !u!225 &331102639
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 331102635}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &475003741
 GameObject:
   m_ObjectHideFlags: 0
@@ -3013,7 +3041,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.93207544, g: 0.21622714, b: 0.10375927, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.08383447, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

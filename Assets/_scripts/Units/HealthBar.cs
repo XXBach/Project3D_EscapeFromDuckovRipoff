@@ -5,31 +5,31 @@ public class HealthBar : MonoBehaviour
 {
     [SerializeField] private Slider _healthBar;
     [SerializeField] private CharacterDataManager _owner;
+    [SerializeField] private CanvasGroup _canvasGroup;
     private void Awake()
     {
-        this.gameObject.SetActive(false);
         _healthBar ??= GetComponent<Slider>();
-
+        _canvasGroup ??= GetComponent<CanvasGroup>();
     }
     private void Start()
     {
         _healthBar.value = _owner.GetCurrentHealth() / _owner.GetMaxHealth();
+        Invoke(nameof(HideHealthBar), 1f);
     }
     public void ShowHealthBar()
     {
-        _healthBar.gameObject.SetActive(true);
+        this._canvasGroup.alpha = 1;
     }
     public void HideHealthBar()
     {
-        _healthBar.gameObject.SetActive(false);
+        this._canvasGroup.alpha = 0;
     }
     public void UpdateHealthBar(HealthChanged args)
     {
-        Debug.Log("Event Received");
         if (args._character != _owner) return;
         ShowHealthBar();
         _healthBar.value = _owner.GetCurrentHealth() / _owner.GetMaxHealth();
-        Invoke(nameof(HideHealthBar), 2f); // Hide the health bar after 2 seconds
+        Invoke(nameof(HideHealthBar), 1f);
     }
     public void OnEnable()
     {
